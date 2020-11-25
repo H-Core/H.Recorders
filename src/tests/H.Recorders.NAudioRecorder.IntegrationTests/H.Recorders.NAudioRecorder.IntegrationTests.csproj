@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net4.8;net5.0</TargetFrameworks>
+    <RootNamespace>H.Recorders.IntegrationTests</RootNamespace>
+  </PropertyGroup>
+
+  <PropertyGroup Label="Signing">
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\libs\H.Recorders.NAudioRecorder\H.Recorders.NAudioRecorder.csproj" />
+  </ItemGroup>
+
+</Project>
