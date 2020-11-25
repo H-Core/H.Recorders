@@ -11,13 +11,29 @@ namespace H.Recorders.IntegrationTests
     [TestClass]
     public class NAudioRecorderTests
     {
+        private static bool CheckDevices()
+        {
+            var devices = NAudioRecorder.GetAvailableDevices();
+            if (!devices.Any())
+            {
+                return false;
+            }
+
+            Console.WriteLine("Available devices:");
+            foreach (var device in devices)
+            {
+                Console.WriteLine($" - Name: {device.Name}, Channels: {device.Channels}");
+            }
+
+            return true;
+        }
+
         [TestMethod]
         public async Task RealTimePlayRecordTest()
         {
-            Console.WriteLine("Available devices:");
-            foreach (var device in NAudioRecorder.GetAvailableDevices())
+            if (!CheckDevices())
             {
-                Console.WriteLine($" - Name: {device.Name}, Channels: {device.Channels}");
+                return;
             }
 
             using var recorder = new NAudioRecorder();
@@ -47,6 +63,11 @@ namespace H.Recorders.IntegrationTests
         [TestMethod]
         public async Task ManagerTest()
         {
+            if (!CheckDevices())
+            {
+                return;
+            }
+
             using var recorder = new NAudioRecorder();
             using var manager = new BaseManager
             {
