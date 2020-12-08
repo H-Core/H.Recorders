@@ -10,7 +10,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
-    <Version>0.9.0</Version>
+    <Version>0.9.3</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Description>H.Recorders</Description>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
