@@ -10,14 +10,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
-    <Version>0.9.3</Version>
+    <Version>0.9.4</Version>
     <GenerateDocumentationFile>false</GenerateDocumentationFile>
     <Description>H.Recorders</Description>
     <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="H.Core" Version="0.9.3" />
+    <PackageReference Include="H.Core" Version="0.9.4" />
     <PackageReference Include="NAudio" Version="1.10.0" />
   </ItemGroup>
 
