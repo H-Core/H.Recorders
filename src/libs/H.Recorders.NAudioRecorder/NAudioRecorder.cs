@@ -122,7 +122,7 @@ namespace H.Recorders
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public static List<DeviceInfo> GetAvailableDevices()
+        public static ICollection<DeviceInfo> GetAvailableDevices()
         {
             return Enumerable
                 .Range(0, WaveInEvent.DeviceCount)
@@ -132,7 +132,7 @@ namespace H.Recorders
                     Name = capability.ProductName,
                     Channels = capability.Channels,
                 })
-                .ToList();
+                .ToArray();
         }
 
         #endregion
