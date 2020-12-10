@@ -13,7 +13,7 @@ namespace H.Recorders.IntegrationTests
     {
         private static bool CheckDevices()
         {
-            var devices = NAudioRecorder.GetAvailableDevices();
+            var devices = NAudioRecorder.GetAvailableDevices().ToList();
             if (!devices.Any())
             {
                 return false;
@@ -22,7 +22,7 @@ namespace H.Recorders.IntegrationTests
             Console.WriteLine("Available devices:");
             foreach (var device in devices)
             {
-                Console.WriteLine($" - Name: {device.Name}, Channels: {device.Channels}");
+                Console.WriteLine($" - Name: {device.ProductName}, Channels: {device.Channels}");
             }
 
             return true;
