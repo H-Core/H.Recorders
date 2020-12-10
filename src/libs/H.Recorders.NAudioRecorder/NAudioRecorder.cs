@@ -10,12 +10,26 @@ using NAudio.Wave;
 
 namespace H.Recorders
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class NAudioRecorder : Recorder
     {
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Rate { get; set; } = 8000;
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public int Bits { get; set; } = 16;
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public int Channels { get; set; } = 1;
 
         private IWaveIn? WaveIn { get; set; }
@@ -26,6 +40,9 @@ namespace H.Recorders
 
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
         public NAudioRecorder()
         {
             AddSetting(nameof(Rate), o => Rate = o, NotNegative, 8000);
@@ -36,14 +53,20 @@ namespace H.Recorders
         #endregion
 
         #region Public methods
-
-        // ReSharper disable AccessToDisposedClosure
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override Task InitializeAsync(CancellationToken cancellationToken = default)
         {
             if (IsInitialized)
             {
-                throw new InvalidOperationException("Already initialized");
+                return Task.CompletedTask;
             }
+            
+            IsInitialized = true;
 
             WaveIn ??= new WaveInEvent
             {
@@ -63,38 +86,43 @@ namespace H.Recorders
                 OnRawDataReceived(args.Buffer);
             };
 
-            using (var stream = new MemoryStream())
-            {
-                using var writer = new BinaryWriter(stream, Encoding.UTF8);
+            using var stream = new MemoryStream();
+            using var writer = new BinaryWriter(stream, Encoding.UTF8);
 
-                // Fake Wav header of current format
-                writer.Write(Encoding.UTF8.GetBytes("RIFF"));
-                writer.Write(int.MaxValue);
-                writer.Write(Encoding.UTF8.GetBytes("WAVE"));
+            // Fake Wav header of current format
+            writer.Write(Encoding.UTF8.GetBytes("RIFF"));
+            writer.Write(int.MaxValue);
+            writer.Write(Encoding.UTF8.GetBytes("WAVE"));
 
-                writer.Write(Encoding.UTF8.GetBytes("fmt "));
-                WaveIn.WaveFormat.Serialize(writer);
+            writer.Write(Encoding.UTF8.GetBytes("fmt "));
+            WaveIn.WaveFormat.Serialize(writer);
 
-                writer.Write(Encoding.UTF8.GetBytes("data"));
-                writer.Write(int.MaxValue);
+            writer.Write(Encoding.UTF8.GetBytes("data"));
+            writer.Write(int.MaxValue);
 
-                stream.Position = 0;
-                WavHeader = stream.ToArray();
-            }
-
-            IsInitialized = true;
+            stream.Position = 0;
+            WavHeader = stream.ToArray();
 
             return Task.CompletedTask;
         }
 
-        // ReSharper disable AccessToDisposedClosure
+        /// <summary>
+        /// Calls InitializeAsync if recorder is not initialized.
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task StartAsync(CancellationToken cancellationToken = default)
         {
-            if (WaveIn == null || 
-                !IsInitialized)
+            if (IsStarted)
             {
-                throw new InvalidOperationException("Is not initialized");
+                return;
             }
+            if (!IsInitialized)
+            {
+                await InitializeAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            WaveIn = WaveIn ?? throw new InvalidOperationException("WaveIn is null");
 
             WaveFileWriter?.Dispose();
             Stream?.Dispose();
@@ -107,6 +135,11 @@ namespace H.Recorders
             await base.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task StopAsync(CancellationToken cancellationToken = default)
         {
             WaveIn?.StopRecording();
@@ -121,23 +154,24 @@ namespace H.Recorders
             await base.StopAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        public static ICollection<DeviceInfo> GetAvailableDevices()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        public static IEnumerable<WaveInCapabilities> GetAvailableDevices()
         {
             return Enumerable
                 .Range(0, WaveInEvent.DeviceCount)
-                .Select(WaveInEvent.GetCapabilities)
-                .Select(capability => new DeviceInfo
-                {
-                    Name = capability.ProductName,
-                    Channels = capability.Channels,
-                })
-                .ToArray();
+                .Select(WaveInEvent.GetCapabilities);
         }
 
         #endregion
 
         #region IDisposable
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Dispose()
         {
             base.Dispose();
@@ -155,11 +189,5 @@ namespace H.Recorders
         }
 
         #endregion
-    }
-
-    public class DeviceInfo
-    {
-        public string? Name { get; set; }
-        public int Channels { get; set; }
     }
 }
