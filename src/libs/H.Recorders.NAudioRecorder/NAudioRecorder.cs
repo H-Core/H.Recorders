@@ -58,7 +58,6 @@ namespace H.Recorders
                     WaveFileWriter.Flush();
                 }
 
-                RawData ??= Array.Empty<byte>();
                 RawData = RawData.Concat(args.Buffer).ToArray();
 
                 OnRawDataReceived(args.Buffer);
