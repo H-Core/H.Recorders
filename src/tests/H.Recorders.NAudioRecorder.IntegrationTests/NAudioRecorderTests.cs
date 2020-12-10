@@ -44,14 +44,9 @@ namespace H.Recorders.IntegrationTests
             output.Init(provider);
             output.Play();
 
-            recorder.RawDataReceived += (_, args) =>
+            recorder.RawDataReceived += (_, bytes) =>
             {
-                if (args.RawData == null)
-                {
-                    return;
-                }
-
-                provider.AddSamples(args.RawData.ToArray(), 0, args.RawData.Count);
+                provider.AddSamples(bytes, 0, bytes.Length);
             };
             await recorder.StartAsync();
             
