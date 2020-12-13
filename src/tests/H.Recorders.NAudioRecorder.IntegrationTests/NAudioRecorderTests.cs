@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
-using H.Core.Managers;
-using H.Core.Recorders;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using NAudio.Wave;
 
@@ -53,23 +51,6 @@ namespace H.Recorders.IntegrationTests
             await Task.Delay(TimeSpan.FromMilliseconds(5000));
 
             await recorder.StopAsync();
-        }
-
-        [TestMethod]
-        public async Task ManagerTest()
-        {
-            if (!CheckDevices())
-            {
-                return;
-            }
-
-            using var recorder = new NAudioRecorder();
-            using var manager = new BaseManager
-            {
-                Recorder = recorder
-            };
-
-            await manager.ChangeWithTimeoutAsync(TimeSpan.FromSeconds(5));
         }
     }
 }
