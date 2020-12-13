@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading;
-using H.Core;
 using H.Core.Attributes;
 using H.Core.Recorders;
 
@@ -31,11 +30,8 @@ namespace H.Recorders
         /// <summary>
         /// 
         /// </summary>
-        public event EventHandler<VoiceActionsEventArgs>? NewPartialData;
-        private void OnNewPartialData() => NewPartialData?.Invoke(this, new VoiceActionsEventArgs
-        {
-            Data = RawData ?? WavData,
-        });
+        public event EventHandler<byte[]>? NewPartialData;
+        private void OnNewPartialData() => NewPartialData?.Invoke(this, RawData);
 
         #endregion
 
