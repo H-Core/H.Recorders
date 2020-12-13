@@ -7,6 +7,9 @@ using H.Core.Recorders;
 
 namespace H.Recorders
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class WinmmRecorder : Recorder
     {
         #region Private methods
@@ -28,6 +31,11 @@ namespace H.Recorders
 
         #region Public methods
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task StartAsync(CancellationToken cancellationToken = default)
         {
             MciSendString("open new Type waveaudio Alias recsound");
@@ -36,6 +44,11 @@ namespace H.Recorders
             await base.StartAsync(cancellationToken).ConfigureAwait(false);
         }
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public override async Task StopAsync(CancellationToken cancellationToken = default)
         {
             var path = Path.GetTempFileName();

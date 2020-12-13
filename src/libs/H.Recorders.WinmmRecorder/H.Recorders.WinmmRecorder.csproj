@@ -6,14 +6,11 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
-    <Version>0.9.3</Version>
-    <GenerateDocumentationFile>false</GenerateDocumentationFile>
-    <Description>H.Recorders</Description>
-    <PackageReleaseNotes>Initial release.</PackageReleaseNotes>
+    <Description></Description>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="H.Core" Version="0.9.3" />
+    <PackageReference Include="H.Core" Version="0.12.0" />
   </ItemGroup>
 
 </Project>

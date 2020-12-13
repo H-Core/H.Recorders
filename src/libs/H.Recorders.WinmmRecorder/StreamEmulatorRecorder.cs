@@ -6,18 +6,31 @@ using H.Core.Recorders;
 
 namespace H.Recorders
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [AllowMultipleInstance(false)]
     public class StreamEmulatorRecorder : ParentRecorder
     {
         #region Properties
 
+        /// <summary>
+        /// 
+        /// </summary>
         public int Interval { get; }
+        
+        /// <summary>
+        /// 
+        /// </summary>
         public Timer Timer { get; }
 
         #endregion
 
         #region Events
 
+        /// <summary>
+        /// 
+        /// </summary>
         public event EventHandler<VoiceActionsEventArgs>? NewPartialData;
         private void OnNewPartialData() => NewPartialData?.Invoke(this, new VoiceActionsEventArgs
         {
@@ -28,6 +41,11 @@ namespace H.Recorders
 
         #region Constructors
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="recorder"></param>
+        /// <param name="interval"></param>
         public StreamEmulatorRecorder(IRecorder recorder, int interval)
         {
             Recorder = recorder;
@@ -57,6 +75,9 @@ namespace H.Recorders
 
         #region IDisposable
 
+        /// <summary>
+        /// 
+        /// </summary>
         public override void Dispose()
         {
             Timer.Dispose();
