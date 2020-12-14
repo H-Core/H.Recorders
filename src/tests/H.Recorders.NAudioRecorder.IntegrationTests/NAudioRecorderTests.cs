@@ -9,12 +9,12 @@ namespace H.Recorders.IntegrationTests
     [TestClass]
     public class NAudioRecorderTests
     {
-        private static bool CheckDevices()
+        private static void CheckDevices()
         {
             var devices = NAudioRecorder.GetAvailableDevices().ToList();
             if (!devices.Any())
             {
-                return false;
+                Assert.Inconclusive("No available devices for NAudioRecorder.");
             }
 
             Console.WriteLine("Available devices:");
@@ -22,17 +22,12 @@ namespace H.Recorders.IntegrationTests
             {
                 Console.WriteLine($" - Name: {device.ProductName}, Channels: {device.Channels}");
             }
-
-            return true;
         }
 
         [TestMethod]
         public async Task RealTimePlayRecordTest()
         {
-            if (!CheckDevices())
-            {
-                return;
-            }
+            CheckDevices();
 
             using var recorder = new NAudioRecorder();
             await recorder.InitializeAsync();
