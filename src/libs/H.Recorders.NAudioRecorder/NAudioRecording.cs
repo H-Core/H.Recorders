@@ -70,15 +70,13 @@ namespace H.Recorders
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override async Task StopAsync(CancellationToken cancellationToken = default)
+        public override Task StopAsync(CancellationToken cancellationToken = default)
         {
             WaveIn.StopRecording();
-
             Stream.Position = 0;
-
             WavData = Stream.ToArray();
 
-            await base.StopAsync(cancellationToken).ConfigureAwait(false);
+            return base.StopAsync(cancellationToken);
         }
 
         #endregion
@@ -90,11 +88,15 @@ namespace H.Recorders
         /// </summary>
         public override void Dispose()
         {
-            base.Dispose();
+            WaveIn.StopRecording();
+            Stream.Position = 0;
+            WavData = Stream.ToArray();
 
             WaveFileWriter.Dispose();
             Stream.Dispose();
             WaveIn.Dispose();
+            
+            base.Dispose();
         }
 
         #endregion

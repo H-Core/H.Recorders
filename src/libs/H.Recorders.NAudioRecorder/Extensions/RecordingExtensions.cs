@@ -16,7 +16,7 @@ namespace H.Recorders.Extensions
         /// </summary>
         /// <param name="recording"></param>
         /// <param name="format"></param>
-        public static void WithPlayback(this IRecording recording, WaveFormat format)
+        public static IRecording WithPlayback(this IRecording recording, WaveFormat format)
         {
             recording = recording ?? throw new ArgumentNullException(nameof(recording));
             
@@ -29,7 +29,9 @@ namespace H.Recorders.Extensions
             {
                 provider.AddSamples(bytes, 0, bytes.Length);
             };
-            recording.Stopped += (_, _) => output.Dispose();
+            recording.Disposed += (_, _) => output.Dispose();
+            
+            return recording;
         }
 
         /// <summary>
@@ -44,9 +46,8 @@ namespace H.Recorders.Extensions
             recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
 
             var recording = await recorder.StartAsync(cancellationToken);
-            recording.WithPlayback(recorder.WaveFormat);
 
-            return recording;
+            return recording.WithPlayback(recorder.WaveFormat);
         }
     }
 }

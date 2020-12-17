@@ -31,10 +31,8 @@ namespace H.Recorders.IntegrationTests
 
             using var recorder = new NAudioRecorder();
             using var recording = await recorder.StartWithPlaybackAsync();
-
+            
             await Task.Delay(TimeSpan.FromSeconds(5));
-
-            await recording.StopAsync();
         }
     }
 }
