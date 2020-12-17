@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,11 +27,18 @@ namespace H.Recorders
         /// <summary>
         /// 
         /// </summary>
-        public NAudioRecording(WaveFormat format)
+        /// <param name="format"></param>
+        /// <param name="delay"></param>
+        /// <param name="deviceNumber"></param>
+        /// <param name="numberOfBuffers"></param>
+        public NAudioRecording(WaveFormat format, TimeSpan delay, int deviceNumber, int numberOfBuffers)
         {
             WaveIn = new WaveInEvent
             {
                 WaveFormat = format,
+                BufferMilliseconds = (int)delay.TotalMilliseconds,
+                DeviceNumber = deviceNumber,
+                NumberOfBuffers = numberOfBuffers,
             };
             WaveIn.DataAvailable += (_, args) =>
             {

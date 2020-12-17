@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -28,6 +29,21 @@ namespace H.Recorders
         /// 
         /// </summary>
         public int Channels { get; set; } = 1;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public TimeSpan Delay { get; set; } = TimeSpan.FromMilliseconds(10); // 100 is recommended.
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int DeviceNumber { get; set; }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public int NumberOfBuffers { get; set; } = 3;
 
         #endregion
 
@@ -59,7 +75,11 @@ namespace H.Recorders
                 await InitializeAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            return new NAudioRecording(new WaveFormat(Rate, Bits, Channels));
+            return new NAudioRecording(
+                new WaveFormat(Rate, Bits, Channels),
+                Delay,
+                DeviceNumber,
+                NumberOfBuffers);
         }
 
         /// <summary>
