@@ -30,22 +30,21 @@ namespace H.Recorders.IntegrationTests
             CheckDevices();
 
             using var recorder = new NAudioRecorder();
-            await recorder.InitializeAsync();
 
             var provider = new BufferedWaveProvider(new WaveFormat(recorder.Rate, recorder.Bits, recorder.Channels));
             using var output = new WaveOutEvent();
             output.Init(provider);
             output.Play();
 
-            recorder.RawDataReceived += (_, bytes) =>
+            using var recording = await recorder.StartAsync();
+            recording.DataReceived += (_, bytes) =>
             {
                 provider.AddSamples(bytes, 0, bytes.Length);
             };
-            await recorder.StartAsync();
-            
-            await Task.Delay(TimeSpan.FromMilliseconds(5000));
 
-            await recorder.StopAsync();
+            await Task.Delay(TimeSpan.FromSeconds(5));
+
+            await recording.StopAsync();
         }
     }
 }

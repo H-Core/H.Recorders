@@ -1,0 +1,94 @@
+﻿using System.IO;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using H.Core.Recorders;
+using H.Recorders.Extensions;
+using NAudio.Wave;
+
+namespace H.Recorders
+{
+    /// <summary>
+    /// 
+    /// </summary>
+    public sealed class NAudioRecording : Recording
+    {
+        #region Properties
+
+        private IWaveIn WaveIn { get; }
+        private MemoryStream Stream { get; }
+        private WaveFileWriter WaveFileWriter { get; }
+
+        #endregion
+
+        #region Constructors
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public NAudioRecording(WaveFormat format)
+        {
+            WaveIn = new WaveInEvent
+            {
+                WaveFormat = format,
+            };
+            WaveIn.DataAvailable += (_, args) =>
+            {
+                if (WaveFileWriter != null)
+                {
+                    WaveFileWriter.Write(args.Buffer, 0, args.BytesRecorded);
+                    WaveFileWriter.Flush();
+                }
+
+                Data = Data.Concat(args.Buffer).ToArray();
+
+                OnDataReceived(args.Buffer);
+            };
+            
+            WavHeader = WaveIn.WaveFormat.ToWavHeader();
+            
+            Stream = new MemoryStream();
+            WaveFileWriter = new WaveFileWriter(Stream, WaveIn.WaveFormat);
+            
+            WaveIn.StartRecording();
+        }
+
+        #endregion
+
+        #region Public methods
+        
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public override async Task StopAsync(CancellationToken cancellationToken = default)
+        {
+            WaveIn.StopRecording();
+
+            Stream.Position = 0;
+
+            WavData = Stream.ToArray();
+
+            await base.StopAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        #endregion
+
+        #region IDisposable
+
+        /// <summary>
+        /// 
+        /// </summary>
+        public override void Dispose()
+        {
+            base.Dispose();
+
+            WaveFileWriter.Dispose();
+            Stream.Dispose();
+            WaveIn.Dispose();
+        }
+
+        #endregion
+    }
+}
