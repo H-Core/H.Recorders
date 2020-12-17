@@ -18,6 +18,11 @@ namespace H.Recorders
         /// <summary>
         /// 
         /// </summary>
+        public WaveFormat WaveFormat => new (Rate, Bits, Channels);
+
+        /// <summary>
+        /// 
+        /// </summary>
         public int Rate { get; set; } = 8000;
         
         /// <summary>
@@ -76,7 +81,7 @@ namespace H.Recorders
             }
 
             return new NAudioRecording(
-                new WaveFormat(Rate, Bits, Channels),
+                WaveFormat,
                 Delay,
                 DeviceNumber,
                 NumberOfBuffers);
