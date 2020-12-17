@@ -1,8 +1,8 @@
 using System;
 using System.Linq;
 using System.Threading.Tasks;
+using H.Recorders.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NAudio.Wave;
 
 namespace H.Recorders.IntegrationTests
 {
@@ -30,17 +30,7 @@ namespace H.Recorders.IntegrationTests
             CheckDevices();
 
             using var recorder = new NAudioRecorder();
-
-            var provider = new BufferedWaveProvider(new WaveFormat(recorder.Rate, recorder.Bits, recorder.Channels));
-            using var output = new WaveOutEvent();
-            output.Init(provider);
-            output.Play();
-
-            using var recording = await recorder.StartAsync();
-            recording.DataReceived += (_, bytes) =>
-            {
-                provider.AddSamples(bytes, 0, bytes.Length);
-            };
+            using var recording = await recorder.StartWithPlaybackAsync();
 
             await Task.Delay(TimeSpan.FromSeconds(5));
 
