@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
+using H.Core;
 using H.Core.Recorders;
 using NAudio.Wave;
 
@@ -40,12 +41,12 @@ namespace H.Recorders.Extensions
         /// <param name="recorder"></param>
         /// <param name="cancellationToken"></param>
         public static async Task<IRecording> StartWithPlaybackAsync(
-            this NAudioRecorder recorder, 
+            this NAudioRecorder recorder,
             CancellationToken cancellationToken = default)
         {
             recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
 
-            var recording = await recorder.StartAsync(cancellationToken);
+            var recording = await recorder.StartAsync(RecordingFormat.Raw, cancellationToken);
 
             return recording.WithPlayback(recorder.WaveFormat);
         }

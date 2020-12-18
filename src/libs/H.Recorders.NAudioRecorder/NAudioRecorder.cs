@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using H.Core;
 using H.Core.Recorders;
 using NAudio.Wave;
 
@@ -67,24 +68,21 @@ namespace H.Recorders
         #endregion
 
         #region Public methods
-        
+
         /// <summary>
         /// Calls InitializeAsync if recorder is not initialized.
         /// </summary>
+        /// <param name="format"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override async Task<IRecording> StartAsync(CancellationToken cancellationToken = default)
+        public override Task<IRecording> StartAsync(RecordingFormat format, CancellationToken cancellationToken = default)
         {
-            if (!IsInitialized)
-            {
-                await InitializeAsync(cancellationToken).ConfigureAwait(false);
-            }
-
-            return new NAudioRecording(
+            return Task.FromResult<IRecording>(new NAudioRecording(
+                format,
                 WaveFormat,
                 Delay,
                 DeviceNumber,
-                NumberOfBuffers);
+                NumberOfBuffers));
         }
 
         /// <summary>

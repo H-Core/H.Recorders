@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using H.Core;
 using H.Core.Recorders;
 using H.Recorders.Extensions;
 using NAudio.Wave;
@@ -17,8 +18,8 @@ namespace H.Recorders
         #region Properties
 
         private IWaveIn WaveIn { get; }
-        private MemoryStream Stream { get; }
-        private WaveFileWriter WaveFileWriter { get; }
+        private MemoryStream? Stream { get; }
+        private WaveFileWriter? WaveFileWriter { get; }
 
         #endregion
 
@@ -28,14 +29,16 @@ namespace H.Recorders
         /// 
         /// </summary>
         /// <param name="format"></param>
+        /// <param name="waveFormat"></param>
         /// <param name="delay"></param>
         /// <param name="deviceNumber"></param>
         /// <param name="numberOfBuffers"></param>
-        public NAudioRecording(WaveFormat format, TimeSpan delay, int deviceNumber, int numberOfBuffers)
+        public NAudioRecording(RecordingFormat format, WaveFormat waveFormat, TimeSpan delay, int deviceNumber, int numberOfBuffers) :
+            base(format)
         {
             WaveIn = new WaveInEvent
             {
-                WaveFormat = format,
+                WaveFormat = waveFormat,
                 BufferMilliseconds = (int)delay.TotalMilliseconds,
                 DeviceNumber = deviceNumber,
                 NumberOfBuffers = numberOfBuffers,
@@ -52,11 +55,13 @@ namespace H.Recorders
 
                 OnDataReceived(args.Buffer);
             };
-            
-            WavHeader = WaveIn.WaveFormat.ToWavHeader();
-            
-            Stream = new MemoryStream();
-            WaveFileWriter = new WaveFileWriter(Stream, WaveIn.WaveFormat);
+
+            if (Format == RecordingFormat.Wav)
+            {
+                Header = WaveIn.WaveFormat.ToWavHeader();
+                Stream = new MemoryStream();
+                WaveFileWriter = new WaveFileWriter(Stream, WaveIn.WaveFormat);
+            }
             
             WaveIn.StartRecording();
         }
@@ -73,8 +78,13 @@ namespace H.Recorders
         public override Task StopAsync(CancellationToken cancellationToken = default)
         {
             WaveIn.StopRecording();
-            Stream.Position = 0;
-            WavData = Stream.ToArray();
+            
+            if (Format is RecordingFormat.Wav &&
+                Stream is not null)
+            {
+                Stream.Position = 0;
+                Data = Stream.ToArray();
+            }
 
             return base.StopAsync(cancellationToken);
         }
@@ -89,11 +99,16 @@ namespace H.Recorders
         public override void Dispose()
         {
             WaveIn.StopRecording();
-            Stream.Position = 0;
-            WavData = Stream.ToArray();
 
-            WaveFileWriter.Dispose();
-            Stream.Dispose();
+            if (Format is RecordingFormat.Wav &&
+                Stream is not null)
+            {
+                Stream.Position = 0;
+                Data = Stream.ToArray();
+            }
+
+            WaveFileWriter?.Dispose();
+            Stream?.Dispose();
             WaveIn.Dispose();
             
             base.Dispose();
