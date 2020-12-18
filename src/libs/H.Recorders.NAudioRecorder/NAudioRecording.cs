@@ -19,8 +19,8 @@ namespace H.Recorders
         #region Properties
 
         private IWaveIn WaveIn { get; }
-        private MemoryStream? Stream { get; }
-        private WaveFileWriter? WaveFileWriter { get; }
+        private MemoryStream? Stream { get; set; }
+        private WaveFileWriter? WaveFileWriter { get; set; }
 
         #endregion
 
@@ -75,39 +75,43 @@ namespace H.Recorders
         {
             WaveIn.StopRecording();
 
-            if (Format is RecordingFormat.Wav or RecordingFormat.Mp3 &&
-                Stream is not null)
+            if (Format is not (RecordingFormat.Wav or RecordingFormat.Mp3) ||
+                Stream is null)
             {
-                Stream.Position = 0;
-                Data = Stream.ToArray();
+                return;
             }
+            
+            Stream.Position = 0;
+            Data = Stream.ToArray();
 
-            if (Format is RecordingFormat.Mp3)
+            if (Format is not RecordingFormat.Mp3)
             {
-                var path1 = Path.GetTempFileName();
-                var path2 = $"{path1}.mp3";
-                try
+                return;
+            }
+                
+            var path1 = Path.GetTempFileName();
+            var path2 = $"{path1}.mp3";
+            try
+            {
+                File.WriteAllBytes(path1, Data);
+
+                var mediaTypes = MediaFoundationEncoder
+                    .GetOutputMediaTypes(AudioSubtypes.MFAudioFormat_MP3);
+                var mediaType = mediaTypes.First();
+
+                using var reader = new MediaFoundationReader(path1);
+                using var encoder = new MediaFoundationEncoder(mediaType);
+                encoder.Encode(path2, reader);
+
+                Data = File.ReadAllBytes(path2);
+            }
+            finally
+            {
+                foreach (var path in new[] { path1, path2 })
                 {
-                    File.WriteAllBytes(path1, Data);
-
-                    var mediaTypes = MediaFoundationEncoder
-                        .GetOutputMediaTypes(AudioSubtypes.MFAudioFormat_MP3);
-                    var mediaType = mediaTypes.First();
-
-                    using var reader = new MediaFoundationReader(path1);
-                    using var encoder = new MediaFoundationEncoder(mediaType);
-                    encoder.Encode(path2, reader);
-
-                    Data = File.ReadAllBytes(path2);
-                }
-                finally
-                {
-                    foreach (var path in new [] { path1, path2 })
+                    if (File.Exists(path))
                     {
-                        if (File.Exists(path))
-                        {
-                            File.Delete(path);
-                        }
+                        File.Delete(path);
                     }
                 }
             }
@@ -137,7 +141,9 @@ namespace H.Recorders
             Stop();
 
             WaveFileWriter?.Dispose();
+            WaveFileWriter = null;
             Stream?.Dispose();
+            Stream = null;
             WaveIn.Dispose();
             
             base.Dispose();
