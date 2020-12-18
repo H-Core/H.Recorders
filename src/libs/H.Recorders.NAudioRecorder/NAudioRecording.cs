@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using H.Core;
 using H.Core.Recorders;
 using H.Recorders.Extensions;
+using NAudio.MediaFoundation;
 using NAudio.Wave;
 
 namespace H.Recorders
@@ -56,7 +57,7 @@ namespace H.Recorders
                 OnDataReceived(args.Buffer);
             };
 
-            if (Format == RecordingFormat.Wav)
+            if (Format is RecordingFormat.Wav or RecordingFormat.Mp3)
             {
                 Header = WaveIn.WaveFormat.ToWavHeader();
                 Stream = new MemoryStream();
@@ -68,8 +69,54 @@ namespace H.Recorders
 
         #endregion
 
+        #region Private methods
+
+        private void Stop()
+        {
+            WaveIn.StopRecording();
+
+            if (Format is RecordingFormat.Wav or RecordingFormat.Mp3 &&
+                Stream is not null)
+            {
+                Stream.Position = 0;
+                Data = Stream.ToArray();
+            }
+
+            if (Format is RecordingFormat.Mp3)
+            {
+                var path1 = Path.GetTempFileName();
+                var path2 = $"{path1}.mp3";
+                try
+                {
+                    File.WriteAllBytes(path1, Data);
+
+                    var mediaTypes = MediaFoundationEncoder
+                        .GetOutputMediaTypes(AudioSubtypes.MFAudioFormat_MP3);
+                    var mediaType = mediaTypes.First();
+
+                    using var reader = new MediaFoundationReader(path1);
+                    using var encoder = new MediaFoundationEncoder(mediaType);
+                    encoder.Encode(path2, reader);
+
+                    Data = File.ReadAllBytes(path2);
+                }
+                finally
+                {
+                    foreach (var path in new [] { path1, path2 })
+                    {
+                        if (File.Exists(path))
+                        {
+                            File.Delete(path);
+                        }
+                    }
+                }
+            }
+        }
+
+        #endregion
+
         #region Public methods
-        
+
         /// <summary>
         /// 
         /// </summary>
@@ -77,35 +124,17 @@ namespace H.Recorders
         /// <returns></returns>
         public override Task StopAsync(CancellationToken cancellationToken = default)
         {
-            WaveIn.StopRecording();
-            
-            if (Format is RecordingFormat.Wav &&
-                Stream is not null)
-            {
-                Stream.Position = 0;
-                Data = Stream.ToArray();
-            }
+            Stop();
 
             return base.StopAsync(cancellationToken);
         }
-
-        #endregion
-
-        #region IDisposable
 
         /// <summary>
         /// 
         /// </summary>
         public override void Dispose()
         {
-            WaveIn.StopRecording();
-
-            if (Format is RecordingFormat.Wav &&
-                Stream is not null)
-            {
-                Stream.Position = 0;
-                Data = Stream.ToArray();
-            }
+            Stop();
 
             WaveFileWriter?.Dispose();
             Stream?.Dispose();
