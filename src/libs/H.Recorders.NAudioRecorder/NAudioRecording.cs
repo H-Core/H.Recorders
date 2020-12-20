@@ -126,11 +126,13 @@ namespace H.Recorders
         /// </summary>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override Task StopAsync(CancellationToken cancellationToken = default)
+        public override Task<byte[]> StopAsync(CancellationToken cancellationToken = default)
         {
             Stop();
+            
+            OnStopped(Data);
 
-            return base.StopAsync(cancellationToken);
+            return Task.FromResult(Data);
         }
 
         /// <summary>

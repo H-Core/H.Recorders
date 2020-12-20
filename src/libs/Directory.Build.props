@@ -7,10 +7,9 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget">
-    <Version>0.16.5</Version>
+    <Version>0.18.4</Version>
     <PackageReleaseNotes>
-      To H.Core 0.16.5.
-      Added mp3 support for NAudioRecorder.
+      To H.Core 0.18.4.
     </PackageReleaseNotes>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
