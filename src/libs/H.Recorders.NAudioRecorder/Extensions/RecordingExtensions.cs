@@ -20,7 +20,8 @@ namespace H.Recorders.Extensions
         public static IRecording WithPlayback(this IRecording recording, WaveFormat format)
         {
             recording = recording ?? throw new ArgumentNullException(nameof(recording));
-            
+            format = format ?? throw new ArgumentNullException(nameof(format));
+
             var provider = new BufferedWaveProvider(format);
             var output = new WaveOutEvent();
             output.Init(provider);
