@@ -14,27 +14,28 @@ namespace H.Recorders.Extensions
         /// 
         /// </summary>
         /// <param name="format"></param>
+        /// <param name="fileSize"></param>
+        /// <param name="dataSize"></param>
         /// <returns></returns>
-        public static byte[] ToWavHeader(this WaveFormat format)
+        public static byte[] ToWavHeader(this WaveFormat format, int fileSize = int.MaxValue, int dataSize = int.MaxValue)
         {
             format = format ?? throw new ArgumentNullException(nameof(format));
-            
+
             using var stream = new MemoryStream();
             using var writer = new BinaryWriter(stream, Encoding.UTF8);
 
-            // Fake Wav header of current format
             writer.Write(Encoding.UTF8.GetBytes("RIFF"));
-            writer.Write(int.MaxValue);
+            writer.Write(fileSize);
             writer.Write(Encoding.UTF8.GetBytes("WAVE"));
 
             writer.Write(Encoding.UTF8.GetBytes("fmt "));
             format.Serialize(writer);
 
             writer.Write(Encoding.UTF8.GetBytes("data"));
-            writer.Write(int.MaxValue);
+            writer.Write(dataSize);
 
             stream.Position = 0;
-            
+
             return stream.ToArray();
         }
     }
