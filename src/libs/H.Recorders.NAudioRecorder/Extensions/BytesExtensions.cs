@@ -6,12 +6,12 @@ using NAudio.Wave;
 namespace H.Recorders.Extensions
 {
     /// <summary>
-    /// 
+    /// byte[] extensions.
     /// </summary>
     public static class BytesExtensions
     {
         /// <summary>
-        /// 
+        /// Plays RAW or WAV bytes.
         /// </summary>
         /// <param name="bytes"></param>
         /// <param name="format"></param>
@@ -21,18 +21,15 @@ namespace H.Recorders.Extensions
             bytes = bytes ?? throw new ArgumentNullException(nameof(bytes));
             format = format ?? throw new ArgumentNullException(nameof(format));
 
-            var source = new TaskCompletionSource<bool>(false);
-            using var registration = cancellationToken.Register(() => source.TrySetCanceled());
-
             var provider = new BufferedWaveProvider(format);
             using var output = new WaveOutEvent();
-            output.PlaybackStopped += (_, _) => source.TrySetResult(true);
             output.Init(provider);
             output.Play();
 
             provider.AddSamples(bytes, 0, bytes.Length);
 
-            await source.Task.ConfigureAwait(false);
+            await Task.Delay(TimeSpan.FromSeconds((double)bytes.Length / format.AverageBytesPerSecond), cancellationToken)
+                .ConfigureAwait(false);
         }
     }
 }
