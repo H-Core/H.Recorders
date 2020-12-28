@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget">
-    <Version>0.18.4.3</Version>
+    <Version>0.18.4.4</Version>
     <PackageReleaseNotes>
       To H.Core 0.18.4.
       Refactored WaveFormatExtensions.
       Added WaveFormatExtensions.ToWavBytes.
+      Added BytesExtensions.PlayAsync.
     </PackageReleaseNotes>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
