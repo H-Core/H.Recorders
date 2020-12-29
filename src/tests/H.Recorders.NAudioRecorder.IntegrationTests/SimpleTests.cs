@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using H.Core;
 using H.Recorders.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using NAudio.Wave;
 
 namespace H.Recorders.IntegrationTests
 {
@@ -51,13 +50,37 @@ namespace H.Recorders.IntegrationTests
             CheckDevices();
             
             using var recorder = new NAudioRecorder();
-            using var recording = await recorder.StartAsync(RecordingFormat.Mp3, cancellationToken);
+            using var recording = await recorder.StartAsync(AudioFormat.Mp3, cancellationToken);
 
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
             await recording.StopAsync(cancellationToken);
             
             File.WriteAllBytes("D:/test.mp3", recording.Data);
+        }
+
+        [TestMethod]
+        public async Task PlayTest()
+        {
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var cancellationToken = cancellationTokenSource.Token;
+
+            CheckDevices();
+
+            using var recorder = new NAudioRecorder
+            {
+                Rate = 48000,
+                Bits = 16,
+                Channels = 1,
+            };
+            using var player = new NAudioPlayer();
+            using var recording = await recorder.StartAsync(AudioFormat.Raw, cancellationToken);
+            
+            await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+
+            var bytes = await recording.StopAsync(cancellationToken);
+
+            await player.PlayAsync(bytes, AudioFormat.Raw, cancellationToken);
         }
     }
 }

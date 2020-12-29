@@ -75,7 +75,7 @@ namespace H.Recorders
         /// <param name="format"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override Task<IRecording> StartAsync(RecordingFormat format, CancellationToken cancellationToken = default)
+        public override Task<IRecording> StartAsync(AudioFormat format, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<IRecording>(new NAudioRecording(
                 format,

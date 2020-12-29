@@ -34,7 +34,7 @@ namespace H.Recorders
         /// <param name="delay"></param>
         /// <param name="deviceNumber"></param>
         /// <param name="numberOfBuffers"></param>
-        public NAudioRecording(RecordingFormat format, WaveFormat waveFormat, TimeSpan delay, int deviceNumber, int numberOfBuffers) :
+        public NAudioRecording(AudioFormat format, WaveFormat waveFormat, TimeSpan delay, int deviceNumber, int numberOfBuffers) :
             base(format)
         {
             WaveIn = new WaveInEvent
@@ -57,7 +57,7 @@ namespace H.Recorders
                 OnDataReceived(args.Buffer);
             };
 
-            if (Format is RecordingFormat.Wav or RecordingFormat.Mp3)
+            if (Format is AudioFormat.Wav or AudioFormat.Mp3)
             {
                 Header = WaveIn.WaveFormat.ToWavHeader();
                 Stream = new MemoryStream();
@@ -75,7 +75,7 @@ namespace H.Recorders
         {
             WaveIn.StopRecording();
 
-            if (Format is not (RecordingFormat.Wav or RecordingFormat.Mp3) ||
+            if (Format is not (AudioFormat.Wav or AudioFormat.Mp3) ||
                 Stream is null)
             {
                 return;
@@ -84,7 +84,7 @@ namespace H.Recorders
             Stream.Position = 0;
             Data = Stream.ToArray();
 
-            if (Format is not RecordingFormat.Mp3)
+            if (Format is not AudioFormat.Mp3)
             {
                 return;
             }

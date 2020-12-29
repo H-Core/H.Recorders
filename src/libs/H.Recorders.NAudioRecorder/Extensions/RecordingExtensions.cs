@@ -47,7 +47,7 @@ namespace H.Recorders.Extensions
         {
             recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
 
-            var recording = await recorder.StartAsync(RecordingFormat.Raw, cancellationToken);
+            var recording = await recorder.StartAsync(AudioFormat.Raw, cancellationToken);
 
             return recording.WithPlayback(recorder.WaveFormat);
         }

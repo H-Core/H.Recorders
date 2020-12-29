@@ -25,7 +25,7 @@ namespace H.Recorders.Extensions
             using var output = new WaveOutEvent();
             output.Init(provider);
             output.Play();
-
+            
             provider.AddSamples(bytes, 0, bytes.Length);
 
             await Task.Delay(TimeSpan.FromSeconds((double)bytes.Length / format.AverageBytesPerSecond), cancellationToken)
