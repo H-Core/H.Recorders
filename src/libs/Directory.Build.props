@@ -12,9 +12,9 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget">
-    <Version>0.19.1</Version>
+    <Version>0.19.3</Version>
     <PackageReleaseNotes>
-      To H.Core 0.19.1.
+      To H.Core 0.19.3.
       Refactored WaveFormatExtensions.
       Added WaveFormatExtensions.ToWavBytes.
       Added BytesExtensions.PlayAsync.

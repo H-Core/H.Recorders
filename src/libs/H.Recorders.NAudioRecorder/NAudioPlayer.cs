@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using H.Core;
+using H.Core.Players;
 using H.Core.Runners;
 using H.Recorders.Extensions;
 using NAudio.Wave;
@@ -11,7 +12,7 @@ namespace H.Recorders
     /// <summary>
     /// 
     /// </summary>
-    public class NAudioPlayer : Runner
+    public class NAudioPlayer : Runner, IPlayer
     {
         #region Constructors
 

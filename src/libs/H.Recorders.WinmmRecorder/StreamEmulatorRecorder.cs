@@ -1,87 +1,87 @@
-﻿using System;
-using System.Threading;
-using H.Core.Attributes;
-using H.Core.Recorders;
+﻿//using System;
+//using System.Threading;
+//using H.Core.Attributes;
+//using H.Core.Recorders;
 
-namespace H.Recorders
-{
-    /// <summary>
-    /// 
-    /// </summary>
-    [AllowMultipleInstance(false)]
-    public class StreamEmulatorRecorder : ParentRecorder
-    {
-        #region Properties
+//namespace H.Recorders
+//{
+//    /// <summary>
+//    /// 
+//    /// </summary>
+//    [AllowMultipleInstance(false)]
+//    public class StreamEmulatorRecorder : Recorder
+//    {
+//        #region Properties
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Interval { get; }
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        public int Interval { get; }
         
-        /// <summary>
-        /// 
-        /// </summary>
-        public Timer Timer { get; }
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        public Timer Timer { get; }
 
-        #endregion
+//        #endregion
 
-        #region Events
+//        #region Events
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public event EventHandler<byte[]>? NewPartialData;
-        private void OnNewPartialData() => NewPartialData?.Invoke(this, RawData);
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        public event EventHandler<byte[]>? NewPartialData;
+//        private void OnNewPartialData() => NewPartialData?.Invoke(this, RawData);
 
-        #endregion
+//        #endregion
 
-        #region Constructors
+//        #region Constructors
 
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="recorder"></param>
-        /// <param name="interval"></param>
-        public StreamEmulatorRecorder(IRecorder recorder, int interval)
-        {
-            Recorder = recorder;
-            Interval = interval;
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        /// <param name="recorder"></param>
+//        /// <param name="interval"></param>
+//        public StreamEmulatorRecorder(IRecorder recorder, int interval)
+//        {
+//            Recorder = recorder;
+//            Interval = interval;
             
-            Timer = new Timer(OnTimer, null, 0, Interval);
-        }
+//            Timer = new Timer(OnTimer, null, 0, Interval);
+//        }
 
-        #endregion
+//        #endregion
 
-        #region Event handlers
+//        #region Event handlers
 
-        private async void OnTimer(object sender)
-        {
-            if (!IsStarted)
-            {
-                return;
-            } 
+//        private async void OnTimer(object sender)
+//        {
+//            if (!IsStarted)
+//            {
+//                return;
+//            } 
 
-            await StopAsync().ConfigureAwait(false);
-            OnNewPartialData();
-            //File.WriteAllBytes($"D:/voice_{new Random().Next()}.wav", Data);
-            await StartAsync().ConfigureAwait(false);
-        }
+//            await StopAsync().ConfigureAwait(false);
+//            OnNewPartialData();
+//            //File.WriteAllBytes($"D:/voice_{new Random().Next()}.wav", Data);
+//            await StartAsync().ConfigureAwait(false);
+//        }
 
-        #endregion
+//        #endregion
 
-        #region IDisposable
+//        #region IDisposable
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public override void Dispose()
-        {
-            Timer.Dispose();
+//        /// <summary>
+//        /// 
+//        /// </summary>
+//        public override void Dispose()
+//        {
+//            Timer.Dispose();
 
-            base.Dispose();
-            GC.SuppressFinalize(this);
-        }
+//            base.Dispose();
+//            GC.SuppressFinalize(this);
+//        }
 
-        #endregion
-    }
-}
+//        #endregion
+//    }
+//}
