@@ -51,8 +51,10 @@ namespace H.Recorders
         /// <returns></returns>
         public override Task<IRecording> StartAsync(AudioSettings? settings = null, CancellationToken cancellationToken = default)
         {
+            settings ??= SupportedSettings.First();
+
             return Task.FromResult<IRecording>(new NAudioRecording(
-                settings ?? new AudioSettings(),
+                settings,
                 DeviceNumber,
                 NumberOfBuffers));
         }

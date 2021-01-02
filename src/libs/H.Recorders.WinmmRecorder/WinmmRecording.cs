@@ -36,8 +36,7 @@ namespace H.Recorders
         /// 
         /// </summary>
         /// <param name="settings"></param>
-        public WinmmRecording(AudioSettings? settings = null) :
-            base(settings)
+        public WinmmRecording(AudioSettings settings) : base(settings)
         {
             MciSendString("open new Type waveaudio Alias recsound");
             MciSendString("record recsound");

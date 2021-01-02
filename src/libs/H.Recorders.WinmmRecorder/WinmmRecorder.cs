@@ -1,4 +1,5 @@
-﻿using System.Threading;
+﻿using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using H.Core;
 using H.Core.Recorders;
@@ -32,6 +33,8 @@ namespace H.Recorders
         /// <returns></returns>
         public override Task<IRecording> StartAsync(AudioSettings? settings = null, CancellationToken cancellationToken = default)
         {
+            settings ??= SupportedSettings.First();
+
             return Task.FromResult<IRecording>(new WinmmRecording(settings));
         }
 
