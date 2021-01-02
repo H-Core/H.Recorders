@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using H.Core;
+using H.Core.Recorders;
 using H.Core.Utilities;
 using H.Recorders.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -57,7 +58,7 @@ namespace H.Recorders.IntegrationTests
             using var recorder = new NAudioRecorder();
             using var recording = await recorder.StartWithPlaybackAsync(cancellationToken);
             recording.Stopped += (_, _) => source.TrySetResult(true);
-            recording.StopWhen(exceptions: exceptions);
+            recording.StopWhenSilence(exceptions: exceptions);
 
             await source.Task;
         }
