@@ -17,7 +17,8 @@ namespace H.Recorders
     {
         #region Properties
 
-        private IWaveIn WaveIn { get; }
+        private bool IsStopped { get; set; }
+        private IWaveIn? WaveIn { get; set; }
         private MemoryStream? Stream { get; set; }
         private WaveFileWriter? WaveFileWriter { get; set; }
 
@@ -70,7 +71,14 @@ namespace H.Recorders
 
         private void Stop()
         {
-            WaveIn.StopRecording();
+            if (IsStopped)
+            {
+                return;
+            }
+            IsStopped = true;
+
+            WaveIn?.Dispose();
+            WaveIn = null;
 
             if (Settings.Format is not (AudioFormat.Wav or AudioFormat.Mp3) ||
                 Stream is null)
@@ -125,7 +133,7 @@ namespace H.Recorders
         /// <returns></returns>
         public override Task<byte[]> StopAsync(CancellationToken cancellationToken = default)
         {
-            Stop();
+            Dispose();
             
             OnStopped(Data);
 
@@ -143,8 +151,9 @@ namespace H.Recorders
             WaveFileWriter = null;
             Stream?.Dispose();
             Stream = null;
-            WaveIn.Dispose();
-            
+            WaveIn?.Dispose();
+            WaveIn = null;
+
             base.Dispose();
         }
 

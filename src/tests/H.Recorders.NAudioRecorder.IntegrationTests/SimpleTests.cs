@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -76,9 +75,9 @@ namespace H.Recorders.IntegrationTests
 
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
-            await recording.StopAsync(cancellationToken);
+            var bytes = await recording.StopAsync(cancellationToken);
             
-            File.WriteAllBytes("D:/test.mp3", recording.Data);
+            Assert.AreNotEqual(0, bytes.Length);
         }
 
         [TestMethod]
