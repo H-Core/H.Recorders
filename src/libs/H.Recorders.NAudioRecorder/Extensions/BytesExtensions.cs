@@ -56,5 +56,37 @@ namespace H.Recorders.Extensions
 
             return max;
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="bytes"></param>
+        /// <param name="bits">Usually 16 or 32</param>
+        /// <exception cref="ArgumentNullException"></exception>
+        /// <returns></returns>
+        public static double GetMaxLevel(this byte[] bytes, int bits)
+        {
+            bytes = bytes ?? throw new ArgumentNullException(nameof(bytes));
+
+            var max = 0.0;
+            var buffer = new WaveBuffer(bytes);
+            for (var index = 0; index < bytes.Length / (bits / 8); index++)
+            {
+                var sample = bits switch
+                {
+                    8 => 1.0 * buffer.ByteBuffer[index] / byte.MaxValue,
+                    16 => 1.0 * buffer.ShortBuffer[index] / short.MaxValue,
+                    32 => 1.0 * buffer.FloatBuffer[index],
+                    _ => throw new NotImplementedException($"Bits: {bits} are unsupported.")
+                };
+                var level = Math.Abs(sample);
+                if (level > max)
+                {
+                    max = level;
+                }
+            }
+
+            return max;
+        }
     }
 }
