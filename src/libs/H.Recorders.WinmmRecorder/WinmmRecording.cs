@@ -35,9 +35,9 @@ namespace H.Recorders
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="format"></param>
-        public WinmmRecording(AudioFormat format) :
-            base(format)
+        /// <param name="settings"></param>
+        public WinmmRecording(AudioSettings? settings = null) :
+            base(settings)
         {
             MciSendString("open new Type waveaudio Alias recsound");
             MciSendString("record recsound");

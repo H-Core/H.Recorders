@@ -18,15 +18,17 @@ namespace H.Recorders
         /// 
         /// </summary>
         /// <param name="bytes"></param>
-        /// <param name="format"></param>
+        /// <param name="settings"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
         public override async Task PlayAsync(
             byte[] bytes,
-            AudioFormat format = AudioFormat.Raw, 
+            AudioSettings? settings = null, 
             CancellationToken cancellationToken = default)
         {
-            await bytes.PlayAsync(new WaveFormat(48000, 16, 1), cancellationToken).ConfigureAwait(false);
+            settings ??= new AudioSettings();
+
+            await bytes.PlayAsync(new WaveFormat(settings.Rate, settings.Bits, settings.Channels), cancellationToken).ConfigureAwait(false);
         }
 
         #endregion

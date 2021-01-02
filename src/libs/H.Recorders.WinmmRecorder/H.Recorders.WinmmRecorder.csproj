@@ -6,11 +6,12 @@
   </PropertyGroup>
 
   <PropertyGroup Label="NuGet">
-    <Description></Description>
+    <Description>Recorder based on winmm.dll.</Description>
+    <PackageTags>winmm, recorder, h.core, h.framework</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="H.Core" Version="0.19.6" />
+    <PackageReference Include="H.Core" Version="0.20.1" />
   </ItemGroup>
 
 </Project>

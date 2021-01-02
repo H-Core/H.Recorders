@@ -38,13 +38,13 @@ namespace H.Recorders.IntegrationTests
             CheckDevices();
 
             using var recorder = new NAudioRecorder();
-            using var recording = await recorder.StartWithPlaybackAsync(cancellationToken);
+            using var recording = await recorder.StartWithPlaybackAsync(null, cancellationToken);
             
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
         }
 
         [TestMethod]
-        public async Task NoiseDetectionTest()
+        public async Task SilenceDetectionTest()
         {
             using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
             var cancellationToken = cancellationTokenSource.Token;
@@ -56,7 +56,7 @@ namespace H.Recorders.IntegrationTests
             using var registration = cancellationToken.Register(() => source.TrySetCanceled(cancellationToken));
 
             using var recorder = new NAudioRecorder();
-            using var recording = await recorder.StartWithPlaybackAsync(cancellationToken);
+            using var recording = await recorder.StartWithPlaybackAsync(null, cancellationToken);
             recording.Stopped += (_, _) => source.TrySetResult(true);
             recording.StopWhenSilence(exceptions: exceptions);
 
@@ -72,7 +72,7 @@ namespace H.Recorders.IntegrationTests
             CheckDevices();
             
             using var recorder = new NAudioRecorder();
-            using var recording = await recorder.StartAsync(AudioFormat.Mp3, cancellationToken);
+            using var recording = await recorder.StartAsync(new AudioSettings(AudioFormat.Mp3), cancellationToken);
 
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
@@ -89,20 +89,16 @@ namespace H.Recorders.IntegrationTests
 
             CheckDevices();
 
-            using var recorder = new NAudioRecorder
-            {
-                Rate = 48000,
-                Bits = 16,
-                Channels = 1,
-            };
+            var settings = new AudioSettings();
+            using var recorder = new NAudioRecorder();
             using var player = new NAudioPlayer();
-            using var recording = await recorder.StartAsync(AudioFormat.Raw, cancellationToken);
+            using var recording = await recorder.StartAsync(settings, cancellationToken);
             
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
 
             var bytes = await recording.StopAsync(cancellationToken);
 
-            await player.PlayAsync(bytes, AudioFormat.Raw, cancellationToken);
+            await player.PlayAsync(bytes, settings, cancellationToken);
         }
     }
 }

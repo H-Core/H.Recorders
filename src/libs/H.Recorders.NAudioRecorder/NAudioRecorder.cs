@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,31 +14,6 @@ namespace H.Recorders
     public sealed class NAudioRecorder : Recorder
     {
         #region Properties
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public WaveFormat WaveFormat => new (Rate, Bits, Channels);
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Rate { get; set; } = 8000;
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Bits { get; set; } = 16;
-        
-        /// <summary>
-        /// 
-        /// </summary>
-        public int Channels { get; set; } = 1;
-
-        /// <summary>
-        /// 
-        /// </summary>
-        public TimeSpan Delay { get; set; } = TimeSpan.FromMilliseconds(10); // 100 is recommended.
 
         /// <summary>
         /// 
@@ -60,9 +34,9 @@ namespace H.Recorders
         /// </summary>
         public NAudioRecorder()
         {
-            AddSetting(nameof(Rate), o => Rate = o, NotNegative, 8000);
-            AddSetting(nameof(Bits), o => Bits = o, NotNegative, 16);
-            AddSetting(nameof(Channels), o => Channels = o, NotNegative, 1);
+            SupportedSettings.Add(new AudioSettings());
+            SupportedSettings.Add(new AudioSettings(AudioFormat.Wav));
+            SupportedSettings.Add(new AudioSettings(AudioFormat.Mp3));
         }
 
         #endregion
@@ -72,15 +46,13 @@ namespace H.Recorders
         /// <summary>
         /// Calls InitializeAsync if recorder is not initialized.
         /// </summary>
-        /// <param name="format"></param>
+        /// <param name="settings"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public override Task<IRecording> StartAsync(AudioFormat format, CancellationToken cancellationToken = default)
+        public override Task<IRecording> StartAsync(AudioSettings? settings = null, CancellationToken cancellationToken = default)
         {
             return Task.FromResult<IRecording>(new NAudioRecording(
-                format,
-                WaveFormat,
-                Delay,
+                settings ?? new AudioSettings(),
                 DeviceNumber,
                 NumberOfBuffers));
         }

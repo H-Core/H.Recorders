@@ -1,5 +1,4 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -29,18 +28,16 @@ namespace H.Recorders
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="format"></param>
-        /// <param name="waveFormat"></param>
-        /// <param name="delay"></param>
+        /// <param name="settings"></param>
         /// <param name="deviceNumber"></param>
         /// <param name="numberOfBuffers"></param>
-        public NAudioRecording(AudioFormat format, WaveFormat waveFormat, TimeSpan delay, int deviceNumber, int numberOfBuffers) :
-            base(format)
+        public NAudioRecording(AudioSettings settings, int deviceNumber, int numberOfBuffers) :
+            base(settings)
         {
             WaveIn = new WaveInEvent
             {
-                WaveFormat = waveFormat,
-                BufferMilliseconds = (int)delay.TotalMilliseconds,
+                WaveFormat = new WaveFormat(settings.Rate, settings.Bits, settings.Channels),
+                BufferMilliseconds = (int)settings.Delay.TotalMilliseconds,
                 DeviceNumber = deviceNumber,
                 NumberOfBuffers = numberOfBuffers,
             };
@@ -57,7 +54,7 @@ namespace H.Recorders
                 OnDataReceived(args.Buffer);
             };
 
-            if (Format is AudioFormat.Wav or AudioFormat.Mp3)
+            if (Settings.Format is AudioFormat.Wav or AudioFormat.Mp3)
             {
                 Header = WaveIn.WaveFormat.ToWavHeader();
                 Stream = new MemoryStream();
@@ -75,7 +72,7 @@ namespace H.Recorders
         {
             WaveIn.StopRecording();
 
-            if (Format is not (AudioFormat.Wav or AudioFormat.Mp3) ||
+            if (Settings.Format is not (AudioFormat.Wav or AudioFormat.Mp3) ||
                 Stream is null)
             {
                 return;
@@ -84,7 +81,7 @@ namespace H.Recorders
             Stream.Position = 0;
             Data = Stream.ToArray();
 
-            if (Format is not AudioFormat.Mp3)
+            if (Settings.Format is not AudioFormat.Mp3)
             {
                 return;
             }
@@ -98,7 +95,7 @@ namespace H.Recorders
                 var mediaTypes = MediaFoundationEncoder
                     .GetOutputMediaTypes(AudioSubtypes.MFAudioFormat_MP3);
                 var mediaType = mediaTypes.First();
-
+                
                 using var reader = new MediaFoundationReader(path1);
                 using var encoder = new MediaFoundationEncoder(mediaType);
                 encoder.Encode(path2, reader);

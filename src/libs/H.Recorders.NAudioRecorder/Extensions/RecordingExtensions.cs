@@ -16,13 +16,13 @@ namespace H.Recorders.Extensions
         /// 
         /// </summary>
         /// <param name="recording"></param>
-        /// <param name="format"></param>
-        public static IRecording WithPlayback(this IRecording recording, WaveFormat format)
+        /// <param name="settings"></param>
+        public static IRecording WithPlayback(this IRecording recording, AudioSettings? settings = null)
         {
             recording = recording ?? throw new ArgumentNullException(nameof(recording));
-            format = format ?? throw new ArgumentNullException(nameof(format));
+            settings ??= new AudioSettings();
 
-            var provider = new BufferedWaveProvider(format);
+            var provider = new BufferedWaveProvider(new WaveFormat(settings.Rate, settings.Bits, settings.Channels));
             var output = new WaveOutEvent();
             output.Init(provider);
             output.Play();
@@ -40,16 +40,18 @@ namespace H.Recorders.Extensions
         /// 
         /// </summary>
         /// <param name="recorder"></param>
+        /// <param name="settings"></param>
         /// <param name="cancellationToken"></param>
         public static async Task<IRecording> StartWithPlaybackAsync(
             this NAudioRecorder recorder,
+            AudioSettings? settings = null,
             CancellationToken cancellationToken = default)
         {
             recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
 
-            var recording = await recorder.StartAsync(AudioFormat.Raw, cancellationToken);
+            var recording = await recorder.StartAsync(settings, cancellationToken);
 
-            return recording.WithPlayback(recorder.WaveFormat);
+            return recording.WithPlayback(settings);
         }
     }
 }
