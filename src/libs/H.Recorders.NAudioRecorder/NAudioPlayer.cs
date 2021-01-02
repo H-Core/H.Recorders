@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using H.Core;
 using H.Core.Players;
 using H.Recorders.Extensions;
-using NAudio.Wave;
 
 namespace H.Recorders
 {
@@ -28,7 +27,7 @@ namespace H.Recorders
         {
             settings ??= new AudioSettings();
 
-            await bytes.PlayAsync(new WaveFormat(settings.Rate, settings.Bits, settings.Channels), cancellationToken).ConfigureAwait(false);
+            await bytes.PlayAsync(settings, cancellationToken).ConfigureAwait(false);
         }
 
         #endregion
