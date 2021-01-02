@@ -49,11 +49,13 @@ namespace H.Recorders.Extensions
         /// <param name="exceptions"></param>
         /// <param name="bufferSize"></param>
         /// <param name="requiredCount"></param>
+        /// <param name="bits">Bits of the sample in the DataReceived.</param>
         public static IRecording StopWhen(
             this IRecording recording, 
             int bufferSize = 300, 
             int requiredCount = 250,
-            double threshold = 0.02, 
+            double threshold = 0.02,
+            int bits = 16,
             ExceptionsBag? exceptions = null)
         {
             recording = recording ?? throw new ArgumentNullException(nameof(recording));
@@ -63,7 +65,7 @@ namespace H.Recorders.Extensions
             {
                 try
                 {
-                    var max = bytes.GetMaxLevel();
+                    var max = bytes.GetMaxLevel(bits);
 
                     last.Enqueue(max);
                     if (last.Count <= bufferSize)
