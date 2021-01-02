@@ -12,13 +12,14 @@
   </PropertyGroup>
 
   <PropertyGroup Label="Nuget">
-    <Version>0.19.5</Version>
+    <Version>0.19.6</Version>
     <PackageReleaseNotes>
-      To H.Core 0.19.5.
+      To H.Core 0.19.6.
       Refactored WaveFormatExtensions.
       Added WaveFormatExtensions.ToWavBytes.
       Added BytesExtensions.PlayAsync.
       Added NAudioPlayer.
+      Added noize detection.
     </PackageReleaseNotes>
     <GeneratePackageOnBuild Condition=" '$(Configuration)' == 'Release' ">true</GeneratePackageOnBuild>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>

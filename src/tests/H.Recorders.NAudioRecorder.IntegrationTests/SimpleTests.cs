@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using H.Core;
+using H.Core.Utilities;
 using H.Recorders.Extensions;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
@@ -39,6 +40,26 @@ namespace H.Recorders.IntegrationTests
             using var recording = await recorder.StartWithPlaybackAsync(cancellationToken);
             
             await Task.Delay(TimeSpan.FromSeconds(5), cancellationToken);
+        }
+
+        [TestMethod]
+        public async Task NoiseDetectionTest()
+        {
+            using var cancellationTokenSource = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+            var cancellationToken = cancellationTokenSource.Token;
+
+            CheckDevices();
+
+            var source = new TaskCompletionSource<bool>();
+            using var exceptions = new ExceptionsBag();
+            using var registration = cancellationToken.Register(() => source.TrySetCanceled(cancellationToken));
+
+            using var recorder = new NAudioRecorder();
+            using var recording = await recorder.StartWithPlaybackAsync(cancellationToken);
+            recording.Stopped += (_, _) => source.TrySetResult(true);
+            recording.StopWhen(exceptions: exceptions);
+
+            await source.Task;
         }
 
         [TestMethod]
