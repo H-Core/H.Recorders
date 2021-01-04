@@ -9,7 +9,7 @@ namespace H.Recorders
     /// <summary>
     /// 
     /// </summary>
-    public class WinmmRecorder : Recorder
+    public sealed class WinmmRecorder : Recorder
     {
         #region Constructors
 

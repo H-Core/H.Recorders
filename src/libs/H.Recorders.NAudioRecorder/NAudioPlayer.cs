@@ -9,7 +9,7 @@ namespace H.Recorders
     /// <summary>
     /// 
     /// </summary>
-    public class NAudioPlayer : Player
+    public sealed class NAudioPlayer : Player
     {
         #region Methods
 

@@ -11,7 +11,7 @@ namespace H.Recorders
     /// <summary>
     /// 
     /// </summary>
-    public sealed class WinmmRecording : Recording
+    internal sealed class WinmmRecording : Recording
     {
         #region Private methods
 

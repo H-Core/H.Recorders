@@ -23,7 +23,9 @@ namespace H.Recorders.Extensions
             settings ??= new AudioSettings();
 
             var provider = new BufferedWaveProvider(new WaveFormat(settings.Rate, settings.Bits, settings.Channels));
+#pragma warning disable CA2000
             var output = new WaveOutEvent();
+#pragma warning restore CA2000
             output.Init(provider);
             output.Play();
 
@@ -49,7 +51,7 @@ namespace H.Recorders.Extensions
         {
             recorder = recorder ?? throw new ArgumentNullException(nameof(recorder));
 
-            var recording = await recorder.StartAsync(settings, cancellationToken);
+            var recording = await recorder.StartAsync(settings, cancellationToken).ConfigureAwait(false);
 
             return recording.WithPlayback(settings);
         }

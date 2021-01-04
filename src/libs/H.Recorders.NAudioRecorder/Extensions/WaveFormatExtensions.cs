@@ -68,8 +68,6 @@ namespace H.Recorders.Extensions
         /// <returns></returns>
         public static byte[] Combine(params byte[][] arrays)
         {
-            arrays = arrays ?? throw new ArgumentNullException(nameof(arrays));
-
             var bytes = new byte[arrays.Sum(x => x.Length)];
             var offset = 0;
 

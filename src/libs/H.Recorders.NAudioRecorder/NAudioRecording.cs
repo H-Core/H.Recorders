@@ -13,7 +13,7 @@ namespace H.Recorders
     /// <summary>
     /// 
     /// </summary>
-    public sealed class NAudioRecording : Recording
+    internal sealed class NAudioRecording : Recording
     {
         #region Properties
 
